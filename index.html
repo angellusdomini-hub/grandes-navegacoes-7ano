@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expansão Marítima: A Epopeia dos Mares</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --parchment: #f4e4bc;
+            --ink: #2c1e1a;
+            --ocean: #0a192f;
+        }
+        body {
+            background-color: var(--ocean);
+            color: var(--ink);
+            font-family: 'MedievalSharp', cursive;
+            background-image: radial-gradient(circle, #1a3a5a 0%, #0a192f 100%);
+        }
+        .parchment-bg {
+            background-color: var(--parchment);
+            background-image: url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
+            box-shadow: 0 0 60px rgba(0,0,0,0.8);
+            border: 20px solid #5d2e0a;
+            border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M0 0 L100 0 L100 100 L0 100 Z' fill='none' stroke='%233a1f0a' stroke-width='20'/%3E%3C/svg%3E") 30 stretch;
+        }
+        .btn-period {
+            background: #5d2e0a;
+            color: #f4e4bc;
+            border: 2px solid #2c1e1a;
+            box-shadow: 3px 3px 0px #2c1e1a;
+            transition: all 0.2s;
+            font-family: 'Cinzel', serif;
+        }
+        .btn-period:hover {
+            background: #8b4513;
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #2c1e1a;
+        }
+        .certificate {
+            font-family: 'Cinzel', serif;
+            border: 15px double #4a2c1a;
+            padding: 4rem;
+            background: #fffdf5;
+            position: relative;
+            background-image: url('https://www.transparenttextures.com/patterns/p6.png');
+        }
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .scroll-text {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 25px;
+        }
+        .scroll-text::-webkit-scrollbar { width: 10px; }
+        .scroll-text::-webkit-scrollbar-thumb { background: #8b4513; border-radius: 5px; border: 2px solid var(--parchment); }
+        
+        .study-summary {
+            border-left: 5px solid #5d2e0a;
+            padding-left: 20px;
+            margin-top: 25px;
+            font-family: 'Cinzel', serif;
+            color: #3a1f0a;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Estilos para Impressão */
+        @media print {
+            body { background: white !important; padding: 0 !important; margin: 0 !important; }
+            #game-container { border: none !important; box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
+            .no-print { display: none !important; }
+            #screen-result { display: block !important; }
+            #certificate-container { display: block !important; padding: 0 !important; }
+            .certificate { border: 12px double #000 !important; width: 100% !important; box-shadow: none !important; padding: 2cm !important; }
+            .parchment-bg { background: white !important; background-image: none !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="game-container" class="max-w-5xl w-full parchment-bg p-6 md:p-12 relative">
+        
+        <!-- INÍCIO -->
+        <div id="screen-start" class="text-center space-y-8 fade-in no-print">
+            <h1 class="text-5xl md:text-7xl font-bold uppercase tracking-widest text-amber-950">A Conquista do Mar Tenebroso</h1>
+            <p class="text-xl md:text-2xl italic text-amber-900">"Pela Fé, pelo Rei e pela Glória da Cristandade"</p>
+            <div class="mt-12 space-y-4">
+                <label class="block text-xl">Como sois chamado nos registros de Suas Majestades para esta nobre jornada?</label>
+                <input type="text" id="student-name" class="p-4 text-center border-b-4 border-amber-950 bg-transparent rounded-none w-full max-w-lg text-3xl focus:outline-none italic" placeholder="Vosso Nome e Título">
+            </div>
+            <button onclick="startGame()" class="btn-period px-12 py-5 rounded text-2xl mt-8">Prestar Juramento de Partida</button>
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div id="screen-content" class="hidden fade-in no-print">
+            <div id="story-block" class="space-y-6">
+                <h2 id="phase-title" class="text-3xl md:text-4xl font-bold border-b-4 border-amber-950 mb-6 pb-4 uppercase text-amber-950"></h2>
+                
+                <div class="scroll-text">
+                    <div id="phase-intro" class="text-2xl font-serif italic mb-6 text-amber-900"></div>
+                    <div id="phase-summary" class="study-summary space-y-4 text-lg leading-relaxed"></div>
+                </div>
+                
+                <div id="kingdom-choice" class="hidden mt-8 p-6 bg-amber-200/40 border-2 border-amber-800 rounded-lg text-center">
+                    <p class="font-bold text-2xl mb-6 italic">A qual Trono jurareis vossa vida e vossa espada?</p>
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <button onclick="chooseKingdom('Portugal')" class="btn-period px-8 py-3 rounded">Pela Coroa de Portugal</button>
+                        <button onclick="chooseKingdom('Espanha')" class="btn-period px-8 py-3 rounded">Pela Coroa de Castela e Aragão</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-center mt-6">
+                    <button id="btn-to-quiz" onclick="startQuiz()" class="btn-period px-10 py-4 rounded text-xl">Apresentar Provas de Saber</button>
+                </div>
+            </div>
+
+            <div id="quiz-block" class="hidden">
+                <div class="flex justify-between items-center mb-8 pb-4 border-b-2 border-amber-800">
+                    <span id="question-counter" class="text-xl font-bold">Inquisição 1/10</span>
+                    <span id="current-score" class="text-lg bg-amber-950 text-white px-4 py-1 rounded">Acertos: 0</span>
+                </div>
+                <div id="question-text" class="text-2xl md:text-3xl mb-10 font-bold leading-tight"></div>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div id="screen-result" class="hidden text-center fade-in">
+            <div id="result-message" class="mb-10 no-print"></div>
+            
+            <div id="certificate-container" class="hidden">
+                <div class="certificate text-center mx-auto max-w-4xl shadow-2xl">
+                    <div class="border-2 border-amber-900 p-10 relative">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-900 rounded-full flex items-center justify-center text-white font-bold border-4 border-red-950 rotate-12 text-sm shadow-xl no-print">SELO REAL</div>
+                        
+                        <h3 class="text-5xl mb-6 font-bold text-amber-950 uppercase" id="cert-title"></h3>
+                        <p class="text-2xl mb-6 italic">Fazemos saber a todos os que este presente virem,</p>
+                        <p class="text-xl mb-4 italic">Por Graça de Deus e Mercê dos Nossos Conselhos, que o Nobre</p>
+                        <p class="text-4xl font-bold my-8 underline decoration-amber-900 italic" id="cert-name"></p>
+                        <p class="text-xl mb-10 leading-relaxed px-8 text-justify italic" id="cert-body"></p>
+                        
+                        <div class="grid grid-cols-2 mt-24 italic">
+                            <div class="space-y-1">
+                                <p class="border-t border-amber-900 pt-2 mx-12 text-xl" id="cert-date"></p>
+                                <p class="text-sm">Escrito no Ano da Graça</p>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="border-t border-amber-900 pt-2 mx-12 text-xl" id="cert-signer"></p>
+                                <p class="text-sm">Assinatura de Sua Alteza / Comandante</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-6 mt-12 no-print">
+                    <button onclick="window.print()" class="btn-period px-10 py-4 rounded-full text-xl flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        Imprimir Provisão Real
+                    </button>
+                    <button onclick="nextPhase()" id="btn-next-phase" class="btn-period px-10 py-4 rounded-full text-xl">Seguir para Próxima Missão</button>
+                </div>
+            </div>
+            
+            <button onclick="retryPhase()" id="btn-retry" class="hidden btn-period px-12 py-5 rounded-full text-2xl mt-10 no-print">Suplicar por Nova Inquisição</button>
+        </div>
+    </div>
+
+    <script>
+        let studentName = "";
+        let currentPhase = 1;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let chosenKingdom = "";
+
+        const gameData = {
+            1: {
+                title: "Fase 1: O Portal de Sagres - Mitos e Perigos",
+                intro: "Aspirante, antes de virdes a bordo, deves discernir a verdade das sombras. O mar é vasto e a mente humana cria demônios onde falta o saber.",
+                summary: `
+                    <strong>Resumo de Estudo - O Imaginário e a Realidade:</strong><br>
+                    • <strong>O Mar Tenebroso:</strong> Assim os europeus chamavam o Atlântico. Temia-se que monstros colossais, abismos infinitos e águas que ferviam no Equador impedissem a passagem.<br>
+                    • <strong>Perigos Reais:</strong> Os verdadeiros inimigos eram o escorbuto (doença pela falta de vitamina C), as tempestades violentas (tormentas), as calmarias prolongadas (que faziam a comida apodrecer) e os naufrágios em recifes não mapeados.<br>
+                    • <strong>Religião e Punição:</strong> Muitos tripulantes eram criminosos cumprindo penas. As tempestades eram interpretadas como castigo divino pelos pecados dos homens.<br>
+                    • <strong>Cartografia Inicial:</strong> Mapas do século XV e XVI misturavam geografia correta com desenhos de feras imaginárias, refletindo o medo e a curiosidade da época.
+                `,
+                questions: [
+                    { q: "Qual o nome do oceano onde se temia monstros e abismos?", a: ["Mar de Vidro", "Mar Tenebroso", "Mar do Norte", "Mar Cáspio"], c: 1 },
+                    { q: "Qual destes era um perigo REAL enfrentado nas caravelas?", a: ["Sereias", "Escorbuto e escassez de água", "Abismo no fim do mundo", "Seres de um olho só"], c: 1 },
+                    { q: "As tempestades violentas eram vistas pelos navegantes como:", a: ["Eventos climáticos normais", "Castigo de Deus pelos pecados", "Efeito da lua", "Fúria de monstros marinhos"], c: 1 },
+                    { q: "O que o mapa de 1587 mostrava além da geografia correta?", a: ["Fotografias", "Seres imaginários e feras", "Apenas cidades europeias", "Nomes de capitães"], c: 1 },
+                    { q: "Quem era enviado às navegações como forma de punição?", a: ["Apenas reis", "Pecadores e criminosos", "Monges", "Nobreza rica"], c: 1 },
+                    { q: "A imaginação medieval temia que o mar fizesse o que no Equador?", a: ["Congelasse", "Fervesse", "Secasse", "Ficasse doce"], c: 1 },
+                    { q: "Qual sentimento persistia apesar do avanço da ciência?", a: ["Medo do desconhecido", "Entusiasmo total", "Tédio", "Indiferença"], c: 0 },
+                    { q: "O escorbuto era causado pela falta de qual nutriente?", a: ["Sal", "Açúcar", "Vitamina C (alimentos frescos)", "Água salgada"], c: 2 },
+                    { q: "As 'Tormentas' eram o nome dado a:", a: ["Peixes gigantes", "Tempestades violentas no mar", "Calmarias", "Doenças"], c: 1 },
+                    { q: "O Mar Tenebroso estimulava qual faculdade humana?", a: ["A lógica pura", "A imaginação e o medo", "A visão noturna", "A preguiça"], c: 1 }
+                ],
+                cert: {
+                    title: "ALVARÁ DE ADMISSÃO EM SAGRES",
+                    body: "Tendo demonstrado discernimento e firmeza de espírito ante os temores do Mar Tenebroso, e provado saber separar as fábulas da realidade, admitimos Vossa Mercê aos estudos sagrados de Cartografia e Astronomia em Nossa Escola de Sagres, para que vossa luz ilumine os caminhos do mar.",
+                    signer: "Grão-Mestre da Ordem de Cristo"
+                }
+            },
+            2: {
+                title: "Fase 2: As Artes de Navegar e a Tecnologia",
+                intro: "Dominar a agulha de marear e a posição dos astros é a única luz na imensidão. Vede os avanços da técnica!",
+                summary: `
+                    <strong>Resumo de Estudo - Tecnologia Naval:</strong><br>
+                    • <strong>Especiarias:</strong> Pimenta, cravo, canela e gengibre eram preciosos. Veneza e Gênova controlavam o Mediterrâneo, forçando a busca pelo Atlântico.<br>
+                    • <strong>A Caravela:</strong> Navio resistente, veloz e de porte médio, com velas triangulares (latinas) que permitiam navegar 'bolinando' (contra o vento em zigue-zague).<br>
+                    • <strong>Instrumentos de Altura:</strong> O <strong>Astrolábio</strong> e o Quadrante serviam para medir a altura dos astros e determinar a latitude. A <strong>Bússola</strong> (agulha magnetizada) indicava o norte.<br>
+                    • <strong>Influência Multicultural:</strong> Judeus e Mouros foram essenciais em Portugal, trazendo conhecimentos de Matemática e Astronomia fundamentais para a Cartografia.
+                `,
+                questions: [
+                    { q: "Quais cidades italianas monopolizavam o Mediterrâneo?", a: ["Lisboa e Porto", "Veneza e Gênova", "Roma e Milão", "Barcelona"], c: 1 },
+                    { q: "Qual a função do Astrolábio nas navegações?", a: ["Ver o fundo do mar", "Determinar a posição dos astros (latitude)", "Medir a profundidade", "Limpar o convés"], c: 1 },
+                    { q: "A Bússola funciona através de:", a: ["Luz solar", "Ponteiro magnetizado para o norte", "Peso da água", "Direção das nuvens"], c: 1 },
+                    { q: "Velas triangulares (latinas) permitiam:", a: ["Navegar com mais peso", "Navegar contra a direção do vento", "Proteção contra o sol", "Pescar peixes grandes"], c: 1 },
+                    { q: "O estudo e representação de mapas chama-se:", a: ["Astronomia", "Cartografia", "Biologia", "Geologia"], c: 1 },
+                    { q: "Quem trouxe saber matemático vital a Portugal?", a: ["Vikings", "Judeus e Mouros", "Franceses", "Russos"], c: 1 },
+                    { q: "As especiarias valiosas vinham de onde?", a: ["América", "Oriente (Índias)", "África do Sul", "Antártida"], c: 1 },
+                    { q: "A caravela era ideal para alto-mar porque era:", a: ["Feita de ouro", "Rápida, resistente e fácil de manobrar", "Muito pesada", "Lenta"], c: 1 },
+                    { q: "O astrolábio media a altura de quê?", a: ["Das ondas", "Dos astros (estrelas e sol)", "Das montanhas", "Dos mastros"], c: 1 },
+                    { q: "A busca por rotas alternativas visava quebrar o monopólio de:", a: ["Espanha", "Cidades italianas (Veneza/Gênova)", "Inglaterra", "França"], c: 1 }
+                ],
+                cert: {
+                    title: "CARTA DE MESTRE NAVEGADOR",
+                    body: "Por mercê de Vosso saber sobre o Astrolábio, a agulha de marear e as artes da Cartografia, outorgamos a Vossa Mercê o título de Mestre das Artes do Mar, estando apto a guiar as naus da Cristandade por águas nunca dantes navegadas.",
+                    signer: "Cosmógrafo-Mor do Reino"
+                }
+            },
+            3: {
+                title: "Fase 3: O Poder Real e a Geografia",
+                intro: "O poder agora emana do trono. Deveis entender a política dos reinos e escolher a quem jurar fidelidade.",
+                summary: `
+                    <strong>Resumo de Estudo - Política e Geografia:</strong><br>
+                    • <strong>Estado Moderno:</strong> Com o fim do feudalismo, os Reis centralizaram o poder, criaram leis escritas e funcionários para cobrar impostos, financiando as expedições.<br>
+                    • <strong>Vantagem Ibérica:</strong> Portugal e Espanha estão onde o Mediterrâneo toca o Atlântico. Os <strong>Ventos Alísios</strong> favoreciam as rotas para o Oeste e Sul.<br>
+                    • <strong>Portugal:</strong> Primeiro a unificar seu território. Buscava o ouro do Sudão e especiarias nas Índias contornando a África.<br>
+                    • <strong>Mão de Obra:</strong> Escassa, pois a maioria vivia da agricultura. Recrutavam-se aventureiros, jovens e criminosos para as frotas.
+                `,
+                questions: [
+                    { q: "Com a crise do feudalismo, o poder concentrou-se nos:", a: ["Nobres feudais", "Reis (Monarquia Centralizada)", "Camponeses", "Bispos"], c: 1 },
+                    { q: "Portugal e Espanha situam-se em qual península?", a: ["Itálica", "Ibérica", "Balcânica", "Escandinava"], c: 1 },
+                    { q: "Ventos que favoreciam a navegação para o Oeste:", a: ["Monções", "Ventos Alísios", "Furacões", "Brisa"], c: 1 },
+                    { q: "Rei que impulsionou navegações no século XIII em Portugal:", a: ["Dom Pedro", "Dom Dinis", "Dom João", "Dom Manuel"], c: 1 },
+                    { q: "A maioria da população portuguesa era:", a: ["Marinheira", "Agrícola", "Industrial", "Militar"], c: 1 },
+                    { q: "Portugal buscava o ouro de qual região africana?", a: ["Egito", "Sudão", "Marrocos", "Etiópia"], c: 1 },
+                    { q: "Quem era responsável por cobrar impostos para as frotas?", a: ["Padres", "Funcionários reais", "Camponeses", "Vendedores"], c: 1 },
+                    { q: "No século XIV, Portugal era uma monarquia:", a: ["Instável", "Estável", "Inexistente", "Democrática"], c: 1 },
+                    { q: "A unificação portuguesa foi um fator de:", a: ["Pobreza", "Impulso às navegações", "Fim do reino", "Guerra com a França"], c: 1 },
+                    { q: "Qual o objetivo de contornar a África?", a: ["Achar gelo", "Chegar às Índias (especiarias)", "Guerrear", "Achar o Brasil"], c: 1 }
+                ],
+                cert: {
+                    title: "PROVISÃO DE CAPITÃO DA ARMADA",
+                    body: "Fazemos saber que Vossa Mercê, tendo jurado lealdade à Nossa Coroa e demonstrado ciência dos ventos e das terras, fica investido da autoridade para comandar frotas para a dilação do Império, conversão das almas e glória de Nosso Nome.",
+                    signer: "" // Dinâmico (Reis Católicos ou Dom Manuel I)
+                }
+            },
+            4: {
+                title: "Fase 4: O Cotidiano Cruel das Naus",
+                intro: "A bordo, a glória é acompanhada pela miséria. Sobreviver é o maior de todos os desafios.",
+                summary: `
+                    <strong>Resumo de Estudo - Vida a Bordo:</strong><br>
+                    • <strong>Higiene:</strong> Praticamente inexistente. A falta de banho causava proliferação de piolhos e pulgas. O espaço era apertado e insalubre.<br>
+                    • <strong>Alimentação:</strong> Água potável era guardada apenas para cozinhar. Comida apodrecia nos porões úmidos e escuros das naus.<br>
+                    • <strong>Hierarquia Cruel:</strong> Oficiais graduados comiam bem; marinheiros pobres comiam restos estragados e adoeciam com frequência.<br>
+                    • <strong>Grandes Capitães:</strong> Cabral (Portugal) e Colombo (Espanha) lideraram estas provações em busca do desconhecido.
+                `,
+                questions: [
+                    { q: "Como era a higiene dos tripulantes nas caravelas?", a: ["Muito limpa", "Precária, sem banho e com parasitas", "Regular", "Lavam-se com perfume"], c: 1 },
+                    { q: "A água potável destinava-se prioritariamente a:", a: ["Banho", "Preparo de alimentos", "Lavar o navio", "Combater incêndios"], c: 1 },
+                    { q: "Onde estragavam os alimentos a bordo?", a: ["No convés", "Nos porões escuros e úmidos", "Na cozinha", "No topo do mastro"], c: 1 },
+                    { q: "Quem recebia o melhor da alimentação?", a: ["Os marinheiros pobres", "Os oficiais graduados", "Os prisioneiros", "As crianças"], c: 1 },
+                    { q: "Capitão que navegou pela Espanha:", a: ["Vasco da Gama", "Cristóvão Colombo", "Pedro Álvares Cabral", "Dom Dinis"], c: 1 },
+                    { q: "Capitão que navegou por Portugal:", a: ["Colombo", "Pedro Álvares Cabral", "Magalhães", "Marco Polo"], c: 1 },
+                    { q: "Causa principal das doenças e mortes no mar:", a: ["Saudade", "Má alimentação e falta de higiene", "Ataque de tubarões", "Frio"], c: 1 },
+                    { q: "A vida nas naus era considerada:", a: ["Fácil e luxuosa", "Precária e desconfortável", "Calma", "Um paraíso"], c: 1 },
+                    { q: "Por que faltava mão de obra qualificada?", a: ["Todos queriam ser reis", "Vida voltada à agricultura", "Falta de barcos", "Havia muita gente rica"], c: 1 },
+                    { q: "A caravela era considerada o melhor barco para:", a: ["Rios", "Navegação em alto-mar", "Lagos pequenos", "Canais"], c: 1 }
+                ],
+                cert: {
+                    title: "DIPLOMA DE NAVEGANTE DO MUNDO",
+                    body: "Certificamos perante o Céu e a Terra que este bravo navegante sobreviveu às tormentas, à fome e à pestilência, cruzando os mares desconhecidos com a coragem dos heróis. Por tais feitos, seu nome será lembrado na eternidade dos descobrimentos.",
+                    signer: "" // Dinâmico (Cabral ou Colombo)
+                }
+            }
+        };
+
+        function startGame() {
+            studentName = document.getElementById('student-name').value;
+            if (studentName.trim().length < 3) {
+                alert("Identificai-vos com vosso nome completo e título, aspirante!");
+                return;
+            }
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-content').classList.remove('hidden');
+            loadPhase();
+        }
+
+        function loadPhase() {
+            const data = gameData[currentPhase];
+            document.getElementById('phase-title').innerText = data.title;
+            document.getElementById('phase-intro').innerHTML = data.intro;
+            document.getElementById('phase-summary').innerHTML = data.summary;
+            
+            document.getElementById('story-block').classList.remove('hidden');
+            document.getElementById('quiz-block').classList.add('hidden');
+            document.getElementById('kingdom-choice').classList.add('hidden');
+            document.getElementById('btn-to-quiz').classList.remove('hidden');
+
+            if (currentPhase === 3) {
+                document.getElementById('kingdom-choice').classList.remove('hidden');
+                document.getElementById('btn-to-quiz').classList.add('hidden');
+            }
+            document.querySelector('.scroll-text').scrollTop = 0;
+        }
+
+        function chooseKingdom(kingdom) {
+            chosenKingdom = kingdom;
+            document.getElementById('btn-to-quiz').classList.remove('hidden');
+            const kName = kingdom === 'Espanha' ? 'Reino de Castela e Aragão' : 'Reino de Portugal';
+            document.getElementById('kingdom-choice').innerHTML = `<p class="text-green-900 font-bold text-2xl italic">Jurastes fidelidade ao ${kName}! Que a Providência e vossa espada vos guiem.</p>`;
+        }
+
+        function startQuiz() {
+            document.getElementById('story-block').classList.add('hidden');
+            document.getElementById('quiz-block').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const phase = gameData[currentPhase];
+            const q = phase.questions[currentQuestionIndex];
+            document.getElementById('question-counter').innerText = `Inquisição ${currentQuestionIndex + 1}/10`;
+            document.getElementById('current-score').innerText = `Acertos: ${score}`;
+            document.getElementById('question-text').innerText = q.q;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            q.a.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-period p-5 text-left rounded-lg text-lg transition-all hover:bg-amber-100 hover:text-amber-950";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(index) {
+            const phase = gameData[currentPhase];
+            if (index === phase.questions[currentQuestionIndex].c) score++;
+            
+            currentQuestionIndex++;
+            if (currentQuestionIndex < 10) showQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('screen-content').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+            const msg = document.getElementById('result-message');
+            const percent = (score / 10) * 100;
+            
+            if (percent >= 80) {
+                msg.innerHTML = `<h2 class="text-4xl text-green-900 mb-4 uppercase font-bold">Vitória e Glória, ${studentName}!</h2>
+                                 <p class="text-xl italic">Vossa sabedoria de ${percent}% foi aceita pelos conselhos reais. Recebei vossa honraria.</p>`;
+                showCertificate();
+            } else {
+                msg.innerHTML = `<h2 class="text-4xl text-red-900 mb-4 uppercase font-bold">Lamentável Prova, ${studentName}.</h2>
+                                 <p class="text-xl italic">Vossa nota de ${percent}% é indigna dos mares. Voltai aos estudos ou sereis lançado às feras.</p>`;
+                document.getElementById('btn-retry').classList.remove('hidden');
+                document.getElementById('certificate-container').classList.add('hidden');
+            }
+        }
+
+        function showCertificate() {
+            const phase = gameData[currentPhase];
+            document.getElementById('certificate-container').classList.remove('hidden');
+            document.getElementById('btn-retry').classList.add('hidden');
+            document.getElementById('cert-title').innerText = phase.cert.title;
+            document.getElementById('cert-name').innerText = studentName;
+            document.getElementById('cert-body').innerText = phase.cert.body;
+            document.getElementById('cert-date').innerText = "XV de Março do Ano da Graça de 1492";
+            
+            let signer = phase.cert.signer;
+            if (currentPhase === 3) {
+                signer = chosenKingdom === "Espanha" ? "Yo, el Rey & Yo, la Reina" : "Dom Manuel I, Rei";
+            } else if (currentPhase === 4) {
+                signer = chosenKingdom === "Espanha" ? "Almirante Cristóvão Colombo" : "Capitão Pedro Álvares Cabral";
+            }
+            document.getElementById('cert-signer').innerText = signer;
+
+            if (currentPhase === 4) {
+                document.getElementById('btn-next-phase').innerText = "Concluir Epopeia";
+                document.getElementById('btn-next-phase').onclick = () => {
+                    alert("Vosso nome agora habita as estrelas que guiam os navegantes!");
+                    location.reload();
+                };
+            }
+        }
+
+        function nextPhase() {
+            currentPhase++;
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-content').classList.remove('hidden');
+            loadPhase();
+        }
+
+        function retryPhase() {
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-content').classList.remove('hidden');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
